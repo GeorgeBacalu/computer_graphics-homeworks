@@ -54,9 +54,8 @@ public class Transformation
 
     public void SymmetryByLine(double xa, double ya, double vx, double vy)
     {
-        var alpha = Math.Atan2(vy, vx);
-        var cosA = Math.Cos(alpha);
-        var sinA = Math.Sin(alpha);
+        var cosA = vx / Math.Sqrt(vx * vx + vy * vy);
+        var sinA = vy / Math.Sqrt(vx * vx + vy * vy);
         Matrix = GetTranslationMatrix(xa, ya) * GetRotationMatrix(cosA, -sinA) * GetSymmetryOxMatrix() * GetRotationMatrix(cosA, sinA) * GetTranslationMatrix(-xa, -ya) * Matrix;
     }
 }

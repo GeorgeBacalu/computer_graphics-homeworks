@@ -9,8 +9,8 @@ using System.Windows.Shapes;
 namespace GC_Homework1.VM;
 public class MainVM : BaseVM
 {
-    private Transformation transformation;
-    private const double pointRadius = 2.5;
+    private Transformation transformation = new();
+    private const double pointRadius = 2.5, rotationSensitivity = 0.005, translationSensitivity = 0.005;
 
     public ObservableCollection<Point> Points { get; } = new();
     public ObservableCollection<Line> Lines { get; } = new();
@@ -22,7 +22,6 @@ public class MainVM : BaseVM
 
     public MainVM()
     {
-        transformation = new Transformation();
         AddPointCommand = new RelayCommand<Point>(AddPoint);
         RotateCommand = new RelayCommand<double>(Rotate);
         TranslateCommand = new RelayCommand<Point>(Translate);
@@ -57,34 +56,45 @@ public class MainVM : BaseVM
     private void Rotate(double alpha)
     {
         var centroid = GetCentroid();
-        transformation.RotateA(centroid.X, centroid.Y, alpha);
+        transformation.RotateA(centroid.X, centroid.Y, alpha * rotationSensitivity);
         ApplyTransformation();
     }
 
-    private void Translate(Point translateFactors)
+    private void Translate(Point delta)
     {
-        transformation.TranslateO(translateFactors.X, translateFactors.Y);
+        transformation.TranslateO(delta.X * translationSensitivity, delta.Y * translationSensitivity);
         ApplyTransformation();
     }
 
-    private void Scale(Point scaleFactors)
+    private void Scale(Point scale)
     {
         var centroid = GetCentroid();
-        transformation.ScaleA(centroid.X, centroid.Y, scaleFactors.X, scaleFactors.Y);
+        transformation.ScaleA(centroid.X, centroid.Y, scale.X, scale.Y);
         ApplyTransformation();
     }
 
     private void ApplyTransformation()
     {
-        for (int i = 0; i < Points.Count; i++)
+        var newPoints = new List<Point>();
+        foreach (var point in Points)
         {
-            var transformedVector = transformation.Matrix * MathNet.Numerics.LinearAlgebra.Vector<double>.Build.DenseOfArray([Points[i].X, Points[i].Y, 1]);
-            Points[i] = new Point(transformedVector[0], transformedVector[1]);
+            var transformed = transformation.Matrix * MathNet.Numerics.LinearAlgebra.Vector<double>.Build.DenseOfArray([point.X, point.Y, 1]);
+            newPoints.Add(new Point(transformed[0], transformed[1]));
         }
+        Points.Clear();
+        newPoints.ForEach(Points.Add);
+
+        Lines.Clear();
+        for (int i = 1; i < Points.Count; i++)
+            Lines.Add(GetLine(Points[i - 1], Points[i]));
+        if (Points.Count > 2)
+            Lines.Add(GetLine(Points[0], Points[Points.Count - 1]));
+
         OnPropertyChanged(nameof(Points));
+        OnPropertyChanged(nameof(Lines));
     }
 
-    private Line GetLine(Point point1, Point point2) => new Line { X1 = point1.X + pointRadius, Y1 = point1.Y + pointRadius, X2 = point2.X + pointRadius, Y2 = point2.Y + pointRadius, Stroke = Brushes.Blue, StrokeThickness = 2 };
+    private Line GetLine(Point point1, Point point2) => new() { X1 = point1.X + pointRadius, Y1 = point1.Y + pointRadius, X2 = point2.X + pointRadius, Y2 = point2.Y + pointRadius, Stroke = Brushes.Blue, StrokeThickness = 2 };
 
-    private Point GetCentroid() => new Point(Points.Sum(p => p.X) / Points.Count, Points.Sum(p => p.Y) / Points.Count);
+    private Point GetCentroid() => new(Points.Average(p => p.X), Points.Average(p => p.Y));
 }

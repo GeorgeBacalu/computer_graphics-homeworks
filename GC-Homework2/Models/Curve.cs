@@ -5,11 +5,23 @@ public class Curve
 {
     public List<Point> Points { get; private set; } = new();
 
-    public List<Point> Generate(Func<double, Point> function, double from, double to, double step)
+    public List<Point> Generate(Func<double, Point> function, double from, double to, double step, double width, double height)
     {
         for (double x = from; x <= to; x += step)
             Points.Add(function(x));
-        return Points;
+
+        var xMin = Points.Min(p => p.X);
+        var xMax = Points.Max(p => p.X);
+        var yMin = Points.Min(p => p.Y);
+        var yMax = Points.Max(p => p.Y);
+
+        var curveWidth = xMax - xMin;
+        var curveHeight = yMax - yMin;
+        var centerX = width / 2;
+        var centerY = height / 2;
+        double scale = Math.Min(width * 0.8 / curveWidth, height * 0.8 / curveHeight);
+
+        return Points.Select(p => new Point((p.X - (xMin + curveWidth / 2)) * scale + centerX, (p.Y - (yMin + curveHeight / 2)) * scale + centerY)).ToList();
     }
 
     public List<Point> ApplyTransformations(List<Point> points, double width, double height)

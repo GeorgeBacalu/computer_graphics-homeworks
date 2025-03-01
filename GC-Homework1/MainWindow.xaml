@@ -5,7 +5,33 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GC_Homework1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="800">
+        Title="Polygon Transformation" Height="800" Width="800">
     <Grid>
+        <Canvas Background="White" x:Name="DrawingCanvas" MouseLeftButtonDown="OnMouseLeftButtonDown" MouseRightButtonDown="OnMouseRightButtonDown" MouseWheel="OnMouseWheel" MouseMove="OnMouseMove">
+            <ItemsControl ItemsSource="{Binding Points}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Ellipse Width="5" Height="5" Fill="Blue" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <ItemsControl ItemsSource="{Binding Lines}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Line X1="{Binding X1}" Y1="{Binding Y1}" X2="{Binding X2}" Y2="{Binding Y2}" Stroke="Blue" StrokeThickness="2" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Canvas>
     </Grid>
 </Window>

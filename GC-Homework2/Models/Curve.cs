@@ -42,8 +42,8 @@ public class Curve
         // 3. Translate points P''_i to the center of the canvas
         var xMax2 = s * xMax1;
         var yMax2 = s * yMax1;
-        var dx = width - xMax2 / 2;
-        var dy = height - yMax2 / 2;
+        var dx = (width - xMax2) / 2;
+        var dy = (height - yMax2) / 2;
         points = points.Select(p => new Point(p.X + dx, p.Y + dy)).ToList();
 
         // 4. Vertical flip
@@ -55,8 +55,6 @@ public class Curve
         var xEnd = new Point(width, newOrigin.Y);
         var yStart = new Point(newOrigin.X, 0);
         var yEnd = new Point(newOrigin.X, height);
-        
-        points.AddRange([xStart, xEnd, yStart, yEnd]);
         return points;
     }
 }

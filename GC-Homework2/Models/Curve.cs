@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using GC_Homework2.Dtos;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace GC_Homework2.Models;
 public class Curve
@@ -24,7 +27,7 @@ public class Curve
         return Points.Select(p => new Point((p.X - (xMin + curveWidth / 2)) * scale + centerX, (p.Y - (yMin + curveHeight / 2)) * scale + centerY)).ToList();
     }
 
-    public List<Point> ApplyTransformations(List<Point> points, double width, double height)
+    public TransformationResult ApplyTransformations(List<Point> points, double width, double height)
     {
         // 1. Translate points P_i to the first quadrant
         var xMin = points.Min(p => p.X);
@@ -55,6 +58,12 @@ public class Curve
         var xEnd = new Point(width, newOrigin.Y);
         var yStart = new Point(newOrigin.X, 0);
         var yEnd = new Point(newOrigin.X, height);
-        return points;
+
+        var axes = new List<Line>
+        {
+            new() { X1 = xStart.X, Y1 = xStart.Y, X2 = xEnd.X, Y2 = xEnd.Y, Stroke = Brushes.Black, StrokeThickness = 2 },
+            new() { X1 = yStart.X, Y1 = yStart.Y, X2 = yEnd.X, Y2 = yEnd.Y, Stroke = Brushes.Black, StrokeThickness = 2 }
+        };
+        return new TransformationResult { Points = points, Axes = axes };
     }
 }

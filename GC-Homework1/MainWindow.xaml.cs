@@ -33,7 +33,7 @@ public partial class MainWindow : Window
 
     private void OnMouseWheel(object sender, MouseWheelEventArgs e)
     {
-        var scaling = e.Delta > 0 ? 1.1 : 0.9;
+        var scaling = e.Delta > 0 ? 1.01 : 0.99;
         mainVM.ScaleCommand.Execute(new Point(scaling, scaling));
     }
 

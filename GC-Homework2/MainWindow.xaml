@@ -28,18 +28,16 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Line X1="{Binding X1}" Y1="{Binding Y1}" X2="{Binding X2}" Y2="{Binding Y2}" 
-                  Stroke="Black" StrokeThickness="2" />
+                        <Line X1="{Binding X1}" Y1="{Binding Y1}" X2="{Binding X2}" Y2="{Binding Y2}" Stroke="Black" StrokeThickness="2" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
             <Path Stroke="Blue" StrokeThickness="2" Data="{Binding CurvePath}" />
         </Canvas>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Center">
-            <Button Content="Generate Curve 1" Margin="10" Command="{Binding GenerateCurveCommand}" CommandParameter="CurveType1" />
-            <Button Content="Generate Curve 2" Margin="10" Command="{Binding GenerateCurveCommand}" CommandParameter="CurveType2" />
-            <Button Content="Generate Curve 3" Margin="10" Command="{Binding GenerateCurveCommand}" CommandParameter="CurveType3" />
-            <Button Content="Apply Transformations" Margin="10" Command="{Binding ApplyTransformationsCommand}" />
+            <Button Content="Generate Curve 1" Margin="10" Command="{Binding GenerateCurveTransformCommand}" CommandParameter="CurveType1" />
+            <Button Content="Generate Curve 2" Margin="10" Command="{Binding GenerateCurveTransformCommand}" CommandParameter="CurveType2" />
+            <Button Content="Generate Curve 3" Margin="10" Command="{Binding GenerateCurveTransformCommand}" CommandParameter="CurveType3" />
         </StackPanel>
     </Grid>
 </Window>

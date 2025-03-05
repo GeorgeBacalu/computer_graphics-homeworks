@@ -12,7 +12,8 @@ public class MainVM : BaseVM
     private Curve curve = new();
     private double _canvasWidth = 800;
     private double _canvasHeight = 800;
-    private const double PointsCount = 1000;
+    private string _lastCurveType;
+    private const double PointsCount = 150;
 
     public double CanvasWidth { get => _canvasWidth; set { _canvasWidth = value; OnPropertyChanged(nameof(CanvasWidth)); } }
     public double CanvasHeight { get => _canvasHeight; set { _canvasHeight = value; OnPropertyChanged(nameof(CanvasHeight)); } }
@@ -27,11 +28,19 @@ public class MainVM : BaseVM
 
     private void GenerateCurveTransform(string curveType)
     {
-        var generatedPoints = curveType switch
+        _lastCurveType = curveType;
+        RegenerateCurve();
+    }
+
+    public void RegenerateCurve()
+    {
+        if (string.IsNullOrWhiteSpace(_lastCurveType)) return;
+
+        var generatedPoints = _lastCurveType switch
         {
-            "CurveType1" => curve.Generate(u => new Point(Math.Cos(u), 2 * Math.Sin(u)), 0, 2 * Math.PI, PointsCount, CanvasWidth, CanvasHeight),
-            "CurveType2" => curve.Generate(u => new Point(u * Math.Cos(u), u * Math.Sin(u)), 0, 20, PointsCount, CanvasWidth, CanvasHeight),
-            "CurveType3" => curve.Generate(u => new Point(u, u * u + 1), -2, 2, PointsCount, CanvasWidth, CanvasHeight),
+            "CurveType1" => curve.Generate(u => new(Math.Cos(u), 2 * Math.Sin(u)), 0, 2 * Math.PI, PointsCount, CanvasWidth, CanvasHeight),
+            "CurveType2" => curve.Generate(u => new(u * Math.Cos(u), u * Math.Sin(u)), 0, 20, PointsCount, CanvasWidth, CanvasHeight),
+            "CurveType3" => curve.Generate(u => new(u, u * u + 1), -2, 2, PointsCount, CanvasWidth, CanvasHeight),
             _ => new()
         };
         var transformationResult = curve.ApplyTransformations(generatedPoints.ToList(), CanvasWidth, CanvasHeight);

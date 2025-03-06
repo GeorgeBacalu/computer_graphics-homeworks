@@ -45,7 +45,7 @@ public class MainVM : BaseVM
             Lines.Add(GetLine(Points[count - 2], Points[count - 1]));
             Lines.Add(GetLine(Points[0], Points[count - 1]));
 
-            var lineToRemove = Lines.FirstOrDefault(line => line.X1 == Points[0].X + pointRadius && line.Y1 == Points[0].Y + pointRadius && line.X2 == Points[count - 2].X + pointRadius && line.Y2 == Points[count - 2].Y + pointRadius);
+            var lineToRemove = Lines.FirstOrDefault(l => l.X1 == Points[0].X + pointRadius && l.Y1 == Points[0].Y + pointRadius && l.X2 == Points[count - 2].X + pointRadius && l.Y2 == Points[count - 2].Y + pointRadius);
             if (lineToRemove != null)
                 Lines.Remove(lineToRemove);
         }

@@ -6,20 +6,20 @@ using System.Windows.Shapes;
 namespace GC_Homework2.Models;
 public class Curve
 {
-    public List<Point> Points { get; private set; } = new();
+    public static List<Point> Points { get; private set; } = new();
 
-    public List<Point> Generate(Func<double, Point> function, double from, double to, double pointsCount, double width, double height)
+    public static List<Point> Generate(Func<double, Point> function, double from, double to, double pointsCount, double width, double height)
     {
         for (int i = 0; i <= pointsCount; i++)
         {
-            double step = (to - from) / pointsCount;
-            double x = from + i * step;
+            var step = (to - from) / pointsCount;
+            var x = from + i * step;
             Points.Add(function(x));
         }
         return Points;
     }
 
-    public TransformationResult ApplyTransformations(List<Point> points, double width, double height)
+    public static TransformationResult ApplyTransformations(List<Point> points, double width, double height)
     {
         // 1. Translate points P_i to the first quadrant
         var xMin = points.Min(p => p.X);

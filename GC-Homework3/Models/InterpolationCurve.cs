@@ -7,14 +7,19 @@ public class InterpolationCurve
 
     public double GenerateLagrangeInterpolation(double x)
     {
+        if (!Points.Any()) return 0.0;
+
         var result = 0.0;
         for (int i = 0; i < Points.Count; i++)
         {
             var term = Points[i].Y;
             for (int j = 0; j < Points.Count; j++)
                 if (j != i)
-                    term *= (x - Points[j].X) / (Points[i].X - Points[j].X);
-
+                {
+                    var denominator = (Points[i].X - Points[j].X);
+                    if (denominator == 0) return 0;
+                    term *= (x - Points[j].X) / denominator;
+                }
             result += term;
         }
         return result;
@@ -22,8 +27,9 @@ public class InterpolationCurve
 
     public double GenerateNewtonInterpolation(double x)
     {
-        var dividedDifferences = new double[Points.Count];
+        if (!Points.Any()) return 0.0;
 
+        var dividedDifferences = new double[Points.Count];
         for (int i = 0; i < Points.Count; i++)
             dividedDifferences[i] = Points[i].Y;
 

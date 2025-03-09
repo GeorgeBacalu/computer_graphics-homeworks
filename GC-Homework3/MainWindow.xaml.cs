@@ -19,4 +19,13 @@ public partial class MainWindow : Window
         var position = e.GetPosition(DrawingCanvas);
         mainVM.AddPointCommand.Execute(position);
     }
+
+    private void OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        var position = e.GetPosition(DrawingCanvas);
+        if (Keyboard.IsKeyDown(Key.LeftCtrl))
+            mainVM.GenerateNewtonInterpolationCommand.Execute(position);
+        else
+            mainVM.GenerateLagrangeInterpolationCommand.Execute(position);
+    }
 }

@@ -9,7 +9,6 @@ using System.Windows.Shapes;
 namespace GC_Homework1.VM;
 public class MainVM : BaseVM
 {
-    private Transformation transformation = new();
     private const double pointRadius = 2.5, rotationSensitivity = 0.005, translationSensitivity = 0.005;
 
     public ObservableCollection<Point> Points { get; } = new();
@@ -56,20 +55,20 @@ public class MainVM : BaseVM
     private void Rotate(double alpha)
     {
         var centroid = GetCentroid();
-        transformation.RotateA(centroid.X, centroid.Y, alpha * rotationSensitivity);
+        Transformation.RotateA(centroid.X, centroid.Y, alpha * rotationSensitivity);
         ApplyTransformation();
     }
 
     private void Translate(Point delta)
     {
-        transformation.TranslateO(delta.X * translationSensitivity, delta.Y * translationSensitivity);
+        Transformation.TranslateO(delta.X * translationSensitivity, delta.Y * translationSensitivity);
         ApplyTransformation();
     }
 
     private void Scale(Point scale)
     {
         var centroid = GetCentroid();
-        transformation.ScaleA(centroid.X, centroid.Y, scale.X, scale.Y);
+        Transformation.ScaleA(centroid.X, centroid.Y, scale.X, scale.Y);
         ApplyTransformation();
     }
 
@@ -78,7 +77,7 @@ public class MainVM : BaseVM
         var newPoints = new List<Point>();
         foreach (var point in Points)
         {
-            var transformed = transformation.Matrix * MathNet.Numerics.LinearAlgebra.Vector<double>.Build.DenseOfArray([point.X, point.Y, 1]);
+            var transformed = Transformation.Matrix * MathNet.Numerics.LinearAlgebra.Vector<double>.Build.DenseOfArray([point.X, point.Y, 1]);
             newPoints.Add(new Point(transformed[0], transformed[1]));
         }
         Points.Clear();

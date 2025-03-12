@@ -6,6 +6,7 @@ namespace GC_Homework3;
 public partial class MainWindow : Window
 {
     private readonly MainVM mainVM;
+    private int? selectedPointIndex = null;
 
     public MainWindow()
     {
@@ -17,7 +18,9 @@ public partial class MainWindow : Window
     private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         var position = e.GetPosition(DrawingCanvas);
-        mainVM.AddPointCommand.Execute(position);
+        selectedPointIndex = mainVM.Points.Select((p, i) => new { Point = p, Index = i }).OrderBy(p => GetDistance(p.Point, position)).FirstOrDefault()?.Index;
+        if (selectedPointIndex.HasValue && GetDistance(mainVM.Points[selectedPointIndex.Value], position) < 100) DrawingCanvas.CaptureMouse();
+        else mainVM.AddPointCommand.Execute(position);
     }
 
     private void OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -28,4 +31,25 @@ public partial class MainWindow : Window
         else
             mainVM.GenerateLagrangeInterpolationCommand.Execute(position);
     }
+
+    private void OnMouseMove(object sender, MouseEventArgs e)
+    {
+        if (selectedPointIndex.HasValue && e.LeftButton == MouseButtonState.Pressed)
+        {
+            var position = e.GetPosition(DrawingCanvas);
+            mainVM.MovePoint(selectedPointIndex.Value, position);
+        }
+    }
+
+    private void OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        if (selectedPointIndex.HasValue)
+        {
+            selectedPointIndex = null;
+            mainVM.GenerateNewtonInterpolationCommand.Execute(null);
+            DrawingCanvas.ReleaseMouseCapture();
+        }
+    }
+
+    private double GetDistance(Point p1, Point p2) => Math.Pow((p1.X - p2.X), 2) + Math.Pow((p1.Y - p2.Y), 2);
 }

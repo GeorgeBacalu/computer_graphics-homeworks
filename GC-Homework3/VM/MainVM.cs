@@ -18,8 +18,8 @@ public class MainVM : BaseVM
     public MainVM()
     {
         AddPointCommand = new RelayCommand<Point>(AddPoint);
-        GenerateLagrangeInterpolationCommand = new RelayCommand<Point>(p => GenerateInterpolation(p, InterpolationCurve.GenerateLagrangeInterpolation));
-        GenerateNewtonInterpolationCommand = new RelayCommand<Point>(p => GenerateInterpolation(p, InterpolationCurve.GenerateNewtonInterpolation));
+        GenerateLagrangeInterpolationCommand = new RelayCommand<object>(_ => GenerateInterpolation(InterpolationCurve.GenerateLagrangeInterpolation));
+        GenerateNewtonInterpolationCommand = new RelayCommand<object>(_ => GenerateInterpolation(InterpolationCurve.GenerateNewtonInterpolation));
     }
 
     private void AddPoint(Point point)
@@ -32,7 +32,26 @@ public class MainVM : BaseVM
         OnPropertyChanged(nameof(Points));
     }
 
-    private void GenerateInterpolation(Point point, Func<double, double> interpolationMethod)
+    public void MovePoint(int index, Point newPosition)
+    {
+        if (index < 0 || index >= Points.Count) return;
+
+        var leftLimit = index > 0 ? Points[index - 1].X : double.MinValue;
+        var rightLimit = index < Points.Count - 1 ? Points[index + 1].X : double.MaxValue;
+
+        // Keep the X-axis value within the range [leftLimit, rightLimit] without exceeding its neighboring points
+        var clampedX = Math.Max(leftLimit, Math.Min(newPosition.X, rightLimit));
+
+        var updatedPoint = new Point(clampedX, newPosition.Y);
+        if (Points[index] == updatedPoint) return;
+        Points[index] = updatedPoint;
+        InterpolationCurve.Points[index] = updatedPoint;
+
+        OnPropertyChanged(nameof(Points));
+        GenerateInterpolation(InterpolationCurve.GenerateNewtonInterpolation);
+    }
+
+    private void GenerateInterpolation(Func<double, double> interpolationMethod)
     {
         if (Points.Count < 2) return;
 

@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Control Curve" Height="800" Width="800">
     <Grid>
-        <Canvas Background="White" x:Name="DrawingCanvas" MouseLeftButtonDown="OnMouseLeftButtonDown" MouseRightButtonDown="OnMouseRightButtonDown">
+        <Canvas Background="White" x:Name="DrawingCanvas" MouseLeftButtonDown="OnMouseLeftButtonDown" MouseRightButtonDown="OnMouseRightButtonDown" MouseMove="OnMouseMove" MouseLeftButtonUp="OnMouseLeftButtonUp">
             <ItemsControl ItemsSource="{Binding Points}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>

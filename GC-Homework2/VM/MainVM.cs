@@ -9,10 +9,9 @@ using System.Windows.Shapes;
 namespace GC_Homework2.VM;
 public class MainVM : BaseVM
 {
-    private Curve curve = new();
     private double _canvasWidth = 800;
     private double _canvasHeight = 800;
-    private string _lastCurveType;
+    private string _lastCurveType = "";
     private const double PointsCount = 150;
 
     public double CanvasWidth { get => _canvasWidth; set { _canvasWidth = value; OnPropertyChanged(nameof(CanvasWidth)); } }
@@ -38,12 +37,12 @@ public class MainVM : BaseVM
 
         var generatedPoints = _lastCurveType switch
         {
-            "CurveType1" => curve.Generate(u => new(Math.Cos(u), 2 * Math.Sin(u)), 0, 2 * Math.PI, PointsCount, CanvasWidth, CanvasHeight),
-            "CurveType2" => curve.Generate(u => new(u * Math.Cos(u), u * Math.Sin(u)), 0, 20, PointsCount, CanvasWidth, CanvasHeight),
-            "CurveType3" => curve.Generate(u => new(u, u * u + 1), -2, 2, PointsCount, CanvasWidth, CanvasHeight),
+            "CurveType1" => Curve.Generate(u => new(Math.Cos(u), 2 * Math.Sin(u)), 0, 2 * Math.PI, PointsCount, CanvasWidth, CanvasHeight),
+            "CurveType2" => Curve.Generate(u => new(u * Math.Cos(u), u * Math.Sin(u)), 0, 20, PointsCount, CanvasWidth, CanvasHeight),
+            "CurveType3" => Curve.Generate(u => new(u, u * u + 1), -2, 2, PointsCount, CanvasWidth, CanvasHeight),
             _ => new()
         };
-        var transformationResult = curve.ApplyTransformations(generatedPoints.ToList(), CanvasWidth, CanvasHeight);
+        var transformationResult = Curve.ApplyTransformations(generatedPoints.ToList(), CanvasWidth, CanvasHeight);
 
         Points.Clear();
         Axes.Clear();

@@ -19,18 +19,7 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <ItemsControl ItemsSource="{Binding InterpolatedPoints}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Ellipse Width="5" Height="5" Fill="Blue">
-                            <Ellipse.RenderTransform>
-                                <TranslateTransform X="{Binding X}" Y="{Binding Y}" />
-                            </Ellipse.RenderTransform>
-                        </Ellipse>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-            <Polyline Points="{Binding InterpolatedCurve}" Stroke="Blue" StrokeThickness="2" />
+            <Path Data="{Binding InterpolatedPath}" Stroke="Blue" StrokeThickness="2" />
         </Canvas>
     </Grid>
 </Window>

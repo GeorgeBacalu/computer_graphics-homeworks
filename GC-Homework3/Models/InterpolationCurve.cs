@@ -3,43 +3,45 @@
 namespace GC_Homework3.Models;
 public class InterpolationCurve
 {
-    public List<Point> Points { get; private set; } = new();
+    public static List<Point> Points { get; private set; } = new();
 
-    public double GenerateLagrangeInterpolation(double x)
+    public static double GenerateLagrangeInterpolation(double x)
     {
         if (!Points.Any()) return 0.0;
 
-        var result = 0.0;
+        var finalY = 0.0;
         for (int i = 0; i < Points.Count; i++)
         {
-            var term = Points[i].Y;
+            var y = Points[i].Y;
             for (int j = 0; j < Points.Count; j++)
                 if (j != i)
-                {
-                    var denominator = (Points[i].X - Points[j].X);
-                    if (denominator == 0) return 0;
-                    term *= (x - Points[j].X) / denominator;
-                }
-            result += term;
+                    y *= (x - Points[j].X) / (Points[i].X - Points[j].X);
+            finalY += y;
         }
-        return result;
+        return finalY;
     }
 
-    public double GenerateNewtonInterpolation(double x)
+    public static double GenerateNewtonInterpolation(double x)
     {
-        if (!Points.Any()) return 0.0;
+        if (Points.Count == 0) return 0.0;
 
-        var dividedDifferences = new double[Points.Count];
-        for (int i = 0; i < Points.Count; i++)
-            dividedDifferences[i] = Points[i].Y;
+        int n = Points.Count;
+        var matrix = new double[n, n];
 
-        for (int j = 1; j < Points.Count; j++)
-            for (int i = Points.Count - 1; i >= j; i--)
-                dividedDifferences[i] = (dividedDifferences[i] - dividedDifferences[i - 1]) / (Points[i].X - Points[i - j].X);
+        // 1. Initialize the matrix with y_i values on the main diagonal
+        for (int i = 0; i < n; i++)
+            matrix[i, i] = Points[i].Y;
 
-        var result = dividedDifferences[Points.Count - 1];
-        for (int i = Points.Count - 2; i >= 0; i--)
-            result = result * (x - Points[i].X) + dividedDifferences[i];
+        // 2. Compute the divided difference coefficients (construct the upper triangular matrix)
+        for (int j = 1; j < n; j++)
+            for (int i = 0; i < n - j; i++)
+                matrix[i, i + j] = (matrix[i + 1, i + j] - matrix[i, i + j - 1]) / (Points[i + j].X - Points[i].X);
+
+        // 3. Evaluate the polynomial at point x
+        double result = matrix[0, n - 1];
+        for (int i = n - 2; i >= 0; i--)
+            result = result * (x - Points[i].X) + matrix[0, i];
+
         return result;
     }
 }

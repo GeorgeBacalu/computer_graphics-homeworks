@@ -8,11 +8,8 @@ using System.Windows.Media;
 namespace GC_Homework3.VM;
 public class MainVM : BaseVM
 {
-    private InterpolationCurve interpolationCurve = new();
-
     public ObservableCollection<Point> Points { get; set; } = new();
-    public ObservableCollection<Point> InterpolatedPoints { get; set; } = new();
-    public PointCollection InterpolatedCurve { get; set; } = new();
+    public PathGeometry InterpolatedPath { get; set; } = new();
 
     public ICommand AddPointCommand { get; set; }
     public ICommand GenerateLagrangeInterpolationCommand { get; set; }
@@ -21,8 +18,8 @@ public class MainVM : BaseVM
     public MainVM()
     {
         AddPointCommand = new RelayCommand<Point>(AddPoint);
-        GenerateLagrangeInterpolationCommand = new RelayCommand<Point>(GenerateLagrangeInterpolation);
-        GenerateNewtonInterpolationCommand = new RelayCommand<Point>(GenerateNewtonInterpolation);
+        GenerateLagrangeInterpolationCommand = new RelayCommand<Point>(p => GenerateInterpolation(p, InterpolationCurve.GenerateLagrangeInterpolation));
+        GenerateNewtonInterpolationCommand = new RelayCommand<Point>(p => GenerateInterpolation(p, InterpolationCurve.GenerateNewtonInterpolation));
     }
 
     private void AddPoint(Point point)
@@ -30,52 +27,30 @@ public class MainVM : BaseVM
         if (Points.Any() && point.X < Points.Last().X) return;
 
         Points.Add(point);
-        interpolationCurve.Points.Add(point);
+        InterpolationCurve.Points.Add(point);
 
         OnPropertyChanged(nameof(Points));
     }
 
-    private void GenerateLagrangeInterpolation(Point point)
+    private void GenerateInterpolation(Point point, Func<double, double> interpolationMethod)
     {
         if (Points.Count < 2) return;
-
-        InterpolatedPoints.Clear();
-        InterpolatedCurve.Clear();
 
         var minX = Points.Min(p => p.X);
         var maxX = Points.Max(p => p.X);
         var step = (maxX - minX) / 500.0;
+
+        var pathFigure = new PathFigure { StartPoint = new Point(minX, interpolationMethod(minX)), IsClosed = false };
+        var bezierSegment = new PolyBezierSegment();
 
         for (double x = minX; x < maxX; x += step)
         {
-            double y = interpolationCurve.GenerateLagrangeInterpolation(x);
-            var newPoint = new Point(x, y);
-            InterpolatedPoints.Add(newPoint);
+            double y = interpolationMethod(x);
+            bezierSegment.Points.Add(new Point(x, y));
         }
-        InterpolatedCurve = new PointCollection(InterpolatedPoints);
-        OnPropertyChanged(nameof(InterpolatedPoints));
-        OnPropertyChanged(nameof(InterpolatedCurve));
-    }
+        pathFigure.Segments.Add(bezierSegment);
+        InterpolatedPath = new PathGeometry([pathFigure]);
 
-    private void GenerateNewtonInterpolation(Point point)
-    {
-        if (Points.Count < 2) return;
-
-        InterpolatedPoints.Clear();
-        InterpolatedCurve.Clear();
-
-        var minX = Points.Min(p => p.X);
-        var maxX = Points.Max(p => p.X);
-        var step = (maxX - minX) / 500.0;
-
-        for (double x = minX; x <= maxX; x += step)
-        {
-            double y = interpolationCurve.GenerateNewtonInterpolation(x);
-            var newPoint = new Point(x, y);
-            InterpolatedPoints.Add(newPoint);
-        }
-        InterpolatedCurve = new PointCollection(InterpolatedPoints);
-        OnPropertyChanged(nameof(InterpolatedPoints));
-        OnPropertyChanged(nameof(InterpolatedCurve));
+        OnPropertyChanged(nameof(InterpolatedPath));
     }
 }

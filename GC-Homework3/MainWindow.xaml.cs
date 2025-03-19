@@ -46,7 +46,6 @@ public partial class MainWindow : Window
         if (selectedPointIndex.HasValue)
         {
             selectedPointIndex = null;
-            mainVM.GenerateNewtonInterpolationCommand.Execute(null);
             DrawingCanvas.ReleaseMouseCapture();
         }
     }

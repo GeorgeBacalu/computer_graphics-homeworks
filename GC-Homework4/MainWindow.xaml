@@ -7,5 +7,18 @@
         mc:Ignorable="d"
         Title="Hermite Curve" Height="800" Width="800">
     <Grid>
+        <Canvas Background="White" x:Name="DrawingCanvas" MouseLeftButtonDown="OnMouseLeftButtonDown">
+            <ItemsControl ItemsSource="{Binding Points}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Ellipse Width="5" Height="5" Fill="Blue">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform X="{Binding X}" Y="{Binding Y}" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Canvas>
     </Grid>
 </Window>

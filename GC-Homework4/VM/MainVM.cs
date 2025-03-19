@@ -35,10 +35,30 @@ public class MainVM : BaseVM
         {
             Points[index] = newPosition;
             OnPropertyChanged(nameof(Points));
-            GenerateHermiteCurve();
+
+            int start = Math.Max(0, index - 1);
+            int end = Math.Min(Points.Count - 2, index);
+            for (int i = start; i <= end; i++)
+            {
+                var point1 = Points[i];
+                var point2 = Points[i + 1];
+                var tangent1 = i == 0 ? (point2 - point1) : (Points[i + 1] - Points[i - 1]) * 0.5;
+                var tangent2 = i == Points.Count - 2 ? (point2 - point1) : (Points[i + 2] - Points[i]) * 0.5;
+
+                var curvePoints = HermiteCurve.GenerateCurve(point1, point2, tangent1, tangent2, PointsCount);
+                var pathFigure = new PathFigure { StartPoint = curvePoints[0], IsClosed = false };
+                var bezierSegment = new PolyBezierSegment(curvePoints.Skip(1).ToList(), true);
+                pathFigure.Segments.Add(bezierSegment);
+
+                if (i < HermitePath.Figures.Count)
+                    HermitePath.Figures[i] = pathFigure;
+                else
+                    HermitePath.Figures.Add(pathFigure);
+            }
+            OnPropertyChanged(nameof(HermitePath));
         }
     }
-    
+
     private void GenerateHermiteCurve()
     {
         if (Points.Count <= 2 || Points.Count % 2 == 1) return;

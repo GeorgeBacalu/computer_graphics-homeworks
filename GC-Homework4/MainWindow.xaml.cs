@@ -19,4 +19,10 @@ public partial class MainWindow : Window
         var position = e.GetPosition(DrawingCanvas);
         mainVM.AddPointCommand.Execute(position);
     }
+
+    private void OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        var position = e.GetPosition(DrawingCanvas);
+        mainVM.GenerateHermiteCurveCommand.Execute(position);
+    }
 }

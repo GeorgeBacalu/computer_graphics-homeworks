@@ -10,16 +10,21 @@ public class MainVM : BaseVM
 {
     private const int PointsCount = 150;
 
+    public enum CurveType { Hermite, Bezier }
+    public CurveType CurrentType { get; set; } = CurveType.Hermite;
+
     public ObservableCollection<Point> Points { get; set; } = new();
-    public PathGeometry HermitePath { get; set; } = new();
+    public PathGeometry InterpolatedPath { get; set; } = new();
 
     public ICommand AddPointCommand { get; set; }
     public ICommand GenerateHermiteCurveCommand { get; set; }
+    public ICommand GenerateBezierCurveCommand { get; set; }
 
     public MainVM()
     {
         AddPointCommand = new RelayCommand<Point>(AddPoint);
-        GenerateHermiteCurveCommand = new RelayCommand<object>(_ => GenerateHermiteCurve());
+        GenerateHermiteCurveCommand = new RelayCommand<object>(_ => ApplyCurveType(CurveType.Hermite));
+        GenerateBezierCurveCommand = new RelayCommand<object>(_ => ApplyCurveType(CurveType.Bezier));
     }
 
     private void AddPoint(Point point)
@@ -35,49 +40,33 @@ public class MainVM : BaseVM
         {
             Points[index] = newPosition;
             OnPropertyChanged(nameof(Points));
-
-            int start = Math.Max(0, index - 1);
-            int end = Math.Min(Points.Count - 2, index);
-            for (int i = start; i <= end; i++)
-            {
-                var point1 = Points[i];
-                var point2 = Points[i + 1];
-                var tangent1 = i == 0 ? (point2 - point1) : (Points[i + 1] - Points[i - 1]) * 0.5;
-                var tangent2 = i == Points.Count - 2 ? (point2 - point1) : (Points[i + 2] - Points[i]) * 0.5;
-
-                var curvePoints = HermiteCurve.GenerateCurve(point1, point2, tangent1, tangent2, PointsCount);
-                var pathFigure = new PathFigure { StartPoint = curvePoints[0], IsClosed = false };
-                var bezierSegment = new PolyBezierSegment(curvePoints.Skip(1).ToList(), true);
-                pathFigure.Segments.Add(bezierSegment);
-
-                if (i < HermitePath.Figures.Count)
-                    HermitePath.Figures[i] = pathFigure;
-                else
-                    HermitePath.Figures.Add(pathFigure);
-            }
-            OnPropertyChanged(nameof(HermitePath));
+            GenerateCurve();
         }
     }
 
-    private void GenerateHermiteCurve()
+    private void ApplyCurveType(CurveType type)
     {
-        if (Points.Count <= 2 || Points.Count % 2 == 1) return;
+        CurrentType = type;
+        GenerateCurve();
+    }
 
-        var pathFigures = new List<PathFigure>();
-        for (int i = 0; i < Points.Count - 1; i++)
+    private void GenerateCurve()
+    {
+        if (Points.Count < 2) return;
+
+        var curvePoints = CurrentType switch
         {
-            var point1 = Points[i];
-            var point2 = Points[i + 1];
-            var tangent1 = i == 0 ? point2 - point1 : (Points[i + 1] - Points[i - 1]) * 0.5;
-            var tangent2 = i == Points.Count - 2 ? point2 - point1 : (Points[i + 2] - Points[i]) * 0.5;
+            CurveType.Hermite when Points.Count >= 2 && Points.Count % 2 == 0 => InterpolationCurve.GenerateHermiteCurve(Points.ToList(), PointsCount),
+            CurveType.Bezier when Points.Count >= 2 => InterpolationCurve.GenerateBezierCurve(Points.ToList(), PointsCount),
+            _ => null
+        };
 
-            var curvePoints = HermiteCurve.GenerateCurve(point1, point2, tangent1, tangent2, PointsCount);
-            var pathFigure = new PathFigure { StartPoint = curvePoints[0], IsClosed = false };
-            var bezierSegment = new PolyBezierSegment(curvePoints.Skip(1).ToList(), true);
-            pathFigure.Segments.Add(bezierSegment);
-            pathFigures.Add(pathFigure);
-        }
-        HermitePath = new PathGeometry(pathFigures);
-        OnPropertyChanged(nameof(HermitePath));
+        if (curvePoints == null || curvePoints.Count < 2) return;
+
+        var pathFigure = new PathFigure { StartPoint = curvePoints[0], IsClosed = false };
+        pathFigure.Segments.Add(new PolyBezierSegment(curvePoints.Skip(1).ToList(), true));
+
+        InterpolatedPath = new PathGeometry(new List<PathFigure> { pathFigure });
+        OnPropertyChanged(nameof(InterpolatedPath));
     }
 }

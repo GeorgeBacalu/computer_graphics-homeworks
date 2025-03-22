@@ -26,7 +26,10 @@ public partial class MainWindow : Window
     private void OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
     {
         var position = e.GetPosition(DrawingCanvas);
-        mainVM.GenerateHermiteCurveCommand.Execute(position);
+        if (Keyboard.IsKeyDown(Key.LeftCtrl))
+            mainVM.GenerateBezierCurveCommand.Execute(position);
+        else
+            mainVM.GenerateHermiteCurveCommand.Execute(position);
     }
 
     private void OnMouseMove(object sender, MouseEventArgs e)

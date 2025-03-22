@@ -15,6 +15,7 @@ public class MainVM : BaseVM
 
     public ObservableCollection<Point> Points { get; set; } = new();
     public PathGeometry InterpolatedPath { get; set; } = new();
+    public PointCollection ControlPolygonPoints => CurrentType == CurveType.Bezier ? new(Points) : new();
 
     public ICommand AddPointCommand { get; set; }
     public ICommand GenerateHermiteCurveCommand { get; set; }
@@ -31,6 +32,7 @@ public class MainVM : BaseVM
     {
         Points.Add(point);
         OnPropertyChanged(nameof(Points));
+        OnPropertyChanged(nameof(ControlPolygonPoints));
     }
 
     public void MovePoint(int index, Point newPosition)
@@ -40,6 +42,7 @@ public class MainVM : BaseVM
         {
             Points[index] = newPosition;
             OnPropertyChanged(nameof(Points));
+            OnPropertyChanged(nameof(ControlPolygonPoints));
             GenerateCurve();
         }
     }
@@ -47,6 +50,7 @@ public class MainVM : BaseVM
     private void ApplyCurveType(CurveType type)
     {
         CurrentType = type;
+        OnPropertyChanged(nameof(ControlPolygonPoints));
         GenerateCurve();
     }
 

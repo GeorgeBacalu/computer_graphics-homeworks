@@ -20,6 +20,7 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
             <Path Data="{Binding InterpolatedPath}" Stroke="Blue" StrokeThickness="2" />
+            <Polyline Points="{Binding ControlPolygonPoints}" Stroke="Gray" StrokeThickness="2" StrokeDashArray="2" />
         </Canvas>
     </Grid>
 </Window>

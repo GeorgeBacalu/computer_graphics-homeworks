@@ -8,7 +8,7 @@ public class Curve
 {
     public static List<Point> Points { get; private set; } = new();
 
-    public static List<Point> Generate(Func<double, Point> function, double from, double to, double pointsCount, double width, double height)
+    public static List<Point> Generate(Func<double, Point> function, double from, double to, int pointsCount, double width, double height)
     {
         for (int i = 0; i <= pointsCount; i++)
         {

@@ -38,17 +38,16 @@ public class MainVM : BaseVM
 
         var leftLimit = index > 0 ? Points[index - 1].X : double.MinValue;
         var rightLimit = index < Points.Count - 1 ? Points[index + 1].X : double.MaxValue;
-
-        // Keep the X-axis value within the range [leftLimit, rightLimit] without exceeding its neighboring points
         var clampedX = Math.Max(leftLimit, Math.Min(newPosition.X, rightLimit));
 
         var updatedPoint = new Point(clampedX, newPosition.Y);
-        if (Points[index] == updatedPoint) return;
-        Points[index] = updatedPoint;
-        InterpolationCurve.Points[index] = updatedPoint;
-
-        OnPropertyChanged(nameof(Points));
-        GenerateInterpolation(InterpolationCurve.GenerateNewtonInterpolation);
+        if (Points[index] != updatedPoint)
+        {
+            Points[index] = updatedPoint;
+            InterpolationCurve.Points[index] = updatedPoint;
+            OnPropertyChanged(nameof(Points));
+            GenerateInterpolation(InterpolationCurve.GenerateNewtonInterpolation);
+        }
     }
 
     private void GenerateInterpolation(Func<double, double> interpolationMethod)

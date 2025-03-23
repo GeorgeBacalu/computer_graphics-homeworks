@@ -1,0 +1,26 @@
+﻿<Window x:Class="GC_Homework4.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GC_Homework4"
+        mc:Ignorable="d"
+        Title="Hermite/Bezier Curve Tool" Height="800" Width="800">
+    <Grid>
+        <Canvas Background="White" x:Name="DrawingCanvas" MouseLeftButtonDown="OnMouseLeftButtonDown" MouseRightButtonDown="OnMouseRightButtonDown" MouseMove="OnMouseMove" MouseLeftButtonUp="OnMouseLeftButtonUp">
+            <ItemsControl ItemsSource="{Binding Points}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Ellipse Width="5" Height="5" Fill="Blue">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform X="{Binding X}" Y="{Binding Y}" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Path Data="{Binding InterpolatedPath}" Stroke="Blue" StrokeThickness="2" />
+            <Polyline Points="{Binding ControlPolygonPoints}" Stroke="Gray" StrokeThickness="2" StrokeDashArray="2" />
+        </Canvas>
+    </Grid>
+</Window>

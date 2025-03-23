@@ -12,7 +12,7 @@ public class MainVM : BaseVM
     private double _canvasWidth = 800;
     private double _canvasHeight = 800;
     private string _lastCurveType = "";
-    private const double PointsCount = 150;
+    private const int PointsCount = 150;
 
     public double CanvasWidth { get => _canvasWidth; set { _canvasWidth = value; OnPropertyChanged(nameof(CanvasWidth)); } }
     public double CanvasHeight { get => _canvasHeight; set { _canvasHeight = value; OnPropertyChanged(nameof(CanvasHeight)); } }
